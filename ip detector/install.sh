@@ -26,7 +26,29 @@ fi
 
 # Install required packages
 echo "Installing required Python packages..."
-pip3 install -r requirements.txt
+
+# Try normal pip install first
+if pip3 install -r requirements.txt 2>/dev/null; then
+    echo "Dependencies installed successfully!"
+else
+    echo "Normal pip install failed. Trying with --break-system-packages..."
+    if pip3 install -r requirements.txt --break-system-packages 2>/dev/null; then
+        echo "Dependencies installed with --break-system-packages flag!"
+        echo "Warning: Using --break-system-packages may affect system stability."
+    else
+        echo "Failed to install dependencies. Please try manual installation:"
+        echo "Option 1: Use virtual environment (recommended):"
+        echo "  python3 -m venv venv"
+        echo "  source venv/bin/activate"
+        echo "  pip install -r requirements.txt"
+        echo ""
+        echo "Option 2: Install pipx and use it:"
+        echo "  sudo apt install pipx"
+        echo "  pipx install requests"
+        echo ""
+        exit 1
+    fi
+fi
 
 # Make the script executable
 chmod +x ip_locator.py
