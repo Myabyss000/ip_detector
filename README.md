@@ -21,7 +21,7 @@ A powerful command-line tool written in Python for detecting geographical locati
 # Clone or download the files
 cd ip-location-detector
 
-# Run the install script (Linux)
+# Run the install script (Linux) - handles externally-managed-environment automatically
 chmod +x install.sh
 ./install.sh
 ```
@@ -35,6 +35,19 @@ sudo dnf install python3 python3-pip                     # Fedora
 
 # Install required packages
 pip3 install -r requirements.txt
+
+# If you get "externally-managed-environment" error, use one of these methods:
+# Method A: Use virtual environment (recommended)
+python3 -m venv venv
+source venv/bin/activate  # On Linux/Mac
+# venv\Scripts\activate   # On Windows
+pip install -r requirements.txt
+
+# Method B: Use pipx (if available)
+pipx install --editable .
+
+# Method C: Use --break-system-packages flag (use with caution)
+pip3 install -r requirements.txt --break-system-packages
 
 # Make script executable
 chmod +x ip_locator.py
@@ -210,7 +223,25 @@ IP geolocation accuracy varies significantly:
 
 ### Common Issues
 
-1. **"Invalid IP address" error**
+1. **"externally-managed-environment" error**
+   ```bash
+   # This error occurs in Python 3.11+ and newer Linux distributions
+   # Solution 1: Use virtual environment (RECOMMENDED)
+   python3 -m venv ip-locator-env
+   source ip-locator-env/bin/activate
+   pip install -r requirements.txt
+   python ip_locator.py -ip 8.8.8.8
+   
+   # Solution 2: Use pipx (if available)
+   sudo apt install pipx  # Install pipx first
+   pipx install requests
+   python3 ip_locator.py -ip 8.8.8.8
+   
+   # Solution 3: System-wide install (use with caution)
+   pip3 install -r requirements.txt --break-system-packages
+   ```
+
+2. **"Invalid IP address" error**
    ```bash
    # Check if IP format is correct
    ./ip-locator -ip 192.168.1.1  # Private IP won't work with public APIs
@@ -232,23 +263,27 @@ IP geolocation accuracy varies significantly:
    ./ip-locator -ip 8.8.8.8 -provider ipinfo -token YOUR_TOKEN
    ```
 
-### Build Issues
+### Installation Issues
 
-1. **Go not installed**
+1. **Python not found**
    ```bash
-   # Install Go on Ubuntu/Debian
+   # Install Python on Ubuntu/Debian
    sudo apt update
-   sudo apt install golang-go
+   sudo apt install python3 python3-pip python3-venv
    
-   # Install Go on CentOS/RHEL
-   sudo yum install golang
+   # Install Python on CentOS/RHEL
+   sudo yum install python3 python3-pip
+   
+   # Install Python on Fedora
+   sudo dnf install python3 python3-pip
    ```
 
 2. **Permission denied**
    ```bash
    # Make script executable
-   chmod +x build.sh
-   chmod +x ip-locator
+   chmod +x ip_locator.py
+   chmod +x install.sh
+   chmod +x test.sh
    ```
 
 ## Development
